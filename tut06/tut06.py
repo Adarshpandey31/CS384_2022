@@ -67,3 +67,41 @@ def consolidate_attendance_func():
     except:
         print("Folder output does not exist")
         exit()
+
+def roll_attendance_func():
+    title = ["Date", "Roll", "Name", "Total Attendance Count",
+             "Real", "Duplicate", "Invalid", "Absent"]
+
+    for rollNum in roll_to_name.keys():
+        try:
+            outputFileName = "output/" + rollNum + ".xlsx"
+            outputFile = openpyxl.Workbook()
+            outputSheet = outputFile.active
+
+            for i, word in enumerate(title):
+                outputSheet.cell(row=1, column=i+1).value = word
+            outputSheet.cell(row=2, column=2).value = rollNum
+            outputSheet.cell(row=2, column=3).value = roll_to_name[rollNum]
+
+            attendance = roll_attendance[rollNum]  # map of date -> array
+
+            for i, date in enumerate(attendance.keys()):
+                outputSheet.cell(row=3+i, column=1).value = date
+                list = attendance[date]
+                total = list[0]+list[1]+list[2]
+
+                outputSheet.cell(row=3+i, column=4).value = total
+                outputSheet.cell(row=3+i, column=5).value = list[0]
+                outputSheet.cell(row=3+i, column=6).value = list[1]
+                outputSheet.cell(row=3+i, column=7).value = list[2]
+
+                if total == 0:
+                    outputSheet.cell(row=3+i, column=8).value = 1
+                else:
+                    outputSheet.cell(row=3+i, column=8).value = 0
+
+            outputFile.save(outputFileName)
+        except:
+            print("The output folder does not exist")
+            exit()
+
